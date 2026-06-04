@@ -10,45 +10,55 @@ class Aspersor {
 		game.onTick(1000, "aspersor_riega_" + self.identity().toString(), { self.regarAlrededor() })
 	}
 	method regarAlrededor(){
-		const vecinas = self.posicionesVecinas()
-		vecinas.forEach({pos => granja.regarPlantaDeAspersor(pos)})	
-	}
-	method posicionesVecinas(){
-		return [position.up(1), position.down(1), position.left(1), position.right(1),
-            position.up(1).left(1), position.up(1).right(1), position.down(1).left(1), position.down(1).right(1)]
+		const vecinos = game.colliders(self)
+		vecinos.forEach({vecino => vecino.regar()})
 	}
 }
 class Trigo {
 	var property position 
-	var evolucion = 0
-	method image() = "wheat_" + evolucion +".png" 
+	var etapa = trigoRecienSembrado
+	method image() = etapa.image()
 	method regar(){
-		if (evolucion==3){
-			evolucion = 0
-		}else{
-			evolucion = evolucion + 1
-		}
+		etapa = etapa.siguienteEtapa()
 	}
-	method esCosechable() = evolucion >= 2
-	method precio() = (evolucion - 1) * 100
+	method esCosechable() = etapa.esCosechable()
+	method precio() = etapa.precio()
 }
+object trigoRecienSembrado {
+	method image() = "wheat_0.png"
+	method esCosechable() = false
+	method precio() = 0
+	method siguienteEtapa() = trigoCreciendo   
+}
+object trigoCreciendo {
+	method image() = "wheat_1.png"
+	method esCosechable() = false
+	method precio() = 0
+	method siguienteEtapa() = trigoMaduro
+}
+object trigoMaduro {
+	method image() = "wheat_2.png"
+	method esCosechable() = false
+	method precio() = (2-1)*100
+	method siguienteEtapa() = trigoPasado
+}
+object trigoPasado{
+	method image() = "wheat_3.png"
+	method esCosechable() = true
+	method precio() = (3-1)*100
+	method siguienteEtapa() = trigoRecienSembrado
+}
+
 class Tomaco {
 	var property position
 	method image() = "tomaco.png"
 	method regar(){
-		const proximaPosicion = self.calcularProximaPosicion()
-		if(not granja.parcelaOcupada(proximaPosicion)){
-			position = proximaPosicion
-		}
+		if(not granja.parcelaOcupada(self.posicionDeArriba())){
+			position = self.posicionDeArriba()
+		}	
 	}
-	method calcularProximaPosicion() {
-	const posicionYDelTomaco = position.y()
-	const bordeSuperior = game.height()-1
-	return if (posicionYDelTomaco==bordeSuperior){
-		game.at(position.x(),0)
-		}else{
-			position.up(1)
-		}
+	method posicionDeArriba(){
+		return if (position.y() == game.height()-1) game.at(position.x(), 0) else position.up(1)
 	}
 	method esCosechable() = true
 	method precio() = 80
@@ -86,8 +96,10 @@ class Mercado {
 	const property mercaderia = []
 	method image() = "market.png"
 	method tieneDineroSuficiente(monto) = monedas >= monto
-	method comprarCosecha(plantas, monto) {
+	method acreditarCompra(plantas, monto) {
 	  monedas = monedas - monto
 	  mercaderia.addAll(plantas)
-	}     
+	}
+	method regar(){
+	} 
 }

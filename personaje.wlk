@@ -6,36 +6,27 @@ object personaje {
 	var property position = game.center()
 	const property image = "fplayer.png"
 	var oroTotal = 0
+	const property cosechados = [] 
 
-	method sembrarMaiz(){
-		granja.sembrarMaiz(self.position())
-	}
-	method sembrarTrigo() {
-		granja.sembrarTrigo(self.position())
-	}
-	method sembrarTomaco(){
-		granja.sembrarTomaco(self.position())
+	method sembrar(cultivo){
+		granja.sembrarEn(self.position(), cultivo)
 	}
 	method regar(){
-		granja.regarPlantaEn(self.position())
+		const plantaAca = granja.plantaEn(self.position())
+		if(plantaAca==null){
+			self.error("No hay ninguna planta aca para regar")
+		}
+		plantaAca.regar()
 	}
 	method reportarEstado(){
-		const mensaje = "tengo " + oroTotal + " monedas, y " + granja.cantidadAVender() + " plantas por vender"
+		const mensaje = "tengo " + oroTotal + " monedas, y " + self.cantidadCosechada() + " plantas por vender"
 		game.say(self, mensaje)
-	}
-	method colocarAspersor(){
-		if(granja.parcelaOcupada(self.position())){
-			self.error("No se puede colocar un aspersor")
-		}
-		const nuevoAspersor = new Aspersor(position= self.position())
-		granja.agregarAspersor(nuevoAspersor)
-		nuevoAspersor.activar()
 	}
 	method venderCosecha() {
 	  const mercadoActual = granja.hayMercadoAca(self.position())
-	  const ganancias = granja.valorVentaCosechados()
+	  const ganancias = self.valorDeLaMochila()
 	  self.validarVenta(mercadoActual,ganancias)
-	  self.realizarVenta(mercadoActual,ganancias)
+	  self.realizarVenta(mercadoActual)
 	}
 	method validarVenta(mercado,ganancias) {
 	  if (mercado==null){
@@ -48,9 +39,37 @@ object personaje {
 		self.error("el mercado no tiene dinero para pagarte")
 	  }
 	}
-	method realizarVenta(mercado,ganancias) {
-	  oroTotal = oroTotal + ganancias
-	  mercado.comprarCosecha(granja.cosechados(), ganancias)
-	  granja.vaciarCosechados()
+	method realizarVenta(mercado) {
+		const ganancias = self.valorDeLaMochila()
+		mercado.acreditarCompra(cosechados, ganancias)
+		oroTotal = oroTotal + ganancias
+		self.vaciarMochila()
+	}
+	method cosechar() {
+	  const plantaACosechar = granja.plantaEn(self.position())
+	  if (plantaACosechar == null){
+		self.error("no hay nada para cosechar")
+	  }
+	  if (not plantaACosechar.esCosechable()){
+		self.error("Todavia no es cosechable")
+	  }
+	  granja.extraerCultivo(plantaACosechar)
+	  self.cosecharPlanta(plantaACosechar)
+	}
+	method cosecharPlanta(planta){
+		cosechados.add(planta)
+	}
+	method vaciarMochila(){
+		cosechados.clear()
+	}
+	method valorDeLaMochila() = cosechados.sum({planta => planta.precio()})
+	method cantidadCosechada() = cosechados.size()
+	method colocarAspersor(){
+		if(granja.parcelaOcupada(self.position())){
+			self.error("No se puede colocar un aspersor aca")
+		}
+		const nuevoAspersor = new Aspersor(position = self.position())
+		nuevoAspersor.activar()
+		granja.registrarAspersor(nuevoAspersor)
 	}
 }

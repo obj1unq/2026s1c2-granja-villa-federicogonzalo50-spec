@@ -18,11 +18,11 @@ program farmville {
  	game.addVisualCharacter(personaje)
  	
 	// CONTROLES PEDIDOS POR EL EJERCICIO
-	keyboard.m().onPressDo({personaje.sembrarMaiz()})
-	keyboard.t().onPressDo({personaje.sembrarTrigo()})
-	keyboard.o().onPressDo({personaje.sembrarTomaco()})
+	keyboard.m().onPressDo({ personaje.sembrar({ new Maiz(position = personaje.position())})})
+	keyboard.t().onPressDo({personaje.sembrar({new Trigo(position = personaje.position())})})
+	keyboard.o().onPressDo({personaje.sembrar({new Tomaco(position = personaje.position())})})
  	keyboard.r().onPressDo({ personaje.regar() })
-	keyboard.c().onPressDo({ granja.cosecharPlanta(personaje.position())})
+	keyboard.c().onPressDo({ personaje.cosechar()})
 	keyboard.v().onPressDo({ personaje.venderCosecha() })
 	keyboard.space().onPressDo({ personaje.reportarEstado() })
 	keyboard.a().onPressDo({ personaje.colocarAspersor() })
