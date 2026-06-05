@@ -7,17 +7,11 @@ object granja {
     const property mercados =  []
     const property aspersores = []
 
-    method plantaEn(posicion)= cultivos.findOrDefault({ c => c.position() == posicion }, null)
+    method existencias() = cultivos + mercados + aspersores
 
-    method mercadoEn(posicion)=mercados.findOrDefault({m => m.position()== posicion}, null)
+    method hayAlgo(posicion) = self.existencias().findOrDefault({o => o.position() == posicion}, null)
 
-    method aspersorEn(posicion)=aspersores.findOrDefault({a => a.position()== posicion}, null)
-
-    method parcelaOcupada(posicion){
-        return self.plantaEn(posicion)      != null
-            or self.mercadoEn(posicion)     != null
-            or self.aspersorEn(posicion)    != null
-    }
+    method parcelaOcupada(posicion)=self.hayAlgo(posicion)!=null
 
     method sembrarEn(posicion, claseDelCultivo){
         self.validarSiembra(posicion)
@@ -25,6 +19,7 @@ object granja {
         self.registrarCultivo(nuevoCultivo)
         game.addVisual(nuevoCultivo)
     }
+
     method validarSiembra(posicion){
         if(self.parcelaOcupada(posicion)){
             self.error("No puedo plantar aca")
@@ -41,11 +36,6 @@ object granja {
         mercados.add(mercado)
         game.addVisual(mercado)        
     }
-    method registrarAspersor(aspersor){
-        aspersores.add(aspersor)
-        game.addVisual(aspersor)
-    }
-    method hayMercadoAca(posicion) = mercados.findOrDefault({m => m.position()==posicion}, null)
     method agregarAspersor(aspersor){
         aspersores.add(aspersor)
         game.addVisual(aspersor)
