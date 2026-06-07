@@ -9,9 +9,8 @@ object granja {
 
     method existencias() = cultivos + mercados + aspersores
 
-    method hayAlgo(posicion) = self.existencias().findOrDefault({o => o.position() == posicion}, null)
+    method hayAlgo(posicion) = self.existencias().any({o => o.position()})
 
-    method parcelaOcupada(posicion)=self.hayAlgo(posicion)!=null
 
     method sembrarEn(posicion, claseDelCultivo){
         self.validarSiembra(posicion)
@@ -21,7 +20,7 @@ object granja {
     }
 
     method validarSiembra(posicion){
-        if(self.parcelaOcupada(posicion)){
+        if(self.hayAlgo(posicion)){
             self.error("No puedo plantar aca")
         }
     }

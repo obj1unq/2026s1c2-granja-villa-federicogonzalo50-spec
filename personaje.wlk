@@ -11,7 +11,7 @@ object personaje {
 	method sembrar(cultivo){
 		granja.sembrarEn(self.position(), cultivo)
 	}
-	method regar(){
+	method regarPlanta(){
 		self.validarParcela()
 		granja.hayAlgo(self.position()).regar()
 	}
@@ -49,9 +49,12 @@ object personaje {
 		granja.agregarAspersor(nuevoAspersor)
 	}
 	method validarParcela(){
-		if(not granja.parcelaOcupada(self.position())) self.error("no hay nada aca")
+		if(not granja.hayAlgo(self.position())) self.error("no hay nada aca")
 	}
-	method validarParcelaLibre(){
-		if( granja.parcelaOcupada(self.position())) self.error("No se puede colocar aca")
-	}
+	method validarParcelaLibre() {
+    if (granja.hayAlgo(self.position())) {
+        self.error("No se puede colocar el aspersor, la parcela ya está ocupada")
+    }
+}
+	method regar(){}
 }

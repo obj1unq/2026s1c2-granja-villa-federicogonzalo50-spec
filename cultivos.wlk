@@ -10,10 +10,9 @@ class Aspersor {
 		game.onTick(1000, "aspersor_riega_" + self.identity().toString(), { self.regarAlrededor() })
 	}
 	method regarAlrededor(){
-		const parcelasVecinas = [position.up(1),position.down(1),position.left(1),position.right(1)]
-		parcelasVecinas.forEach({pos => 
-			const parcela = granja.hayAlgo(pos)
-			if(parcela != null) parcela.regar()
+		const parcelasVecinas = [position.up(1),position.down(1),position.left(1),position.right(1),position.up(1).left(1), position.up(1).right(1),
+			position.down(1).left(1), position.down(1).right(1)]
+		parcelasVecinas.forEach({pos => game.getObjectsIn(pos).forEach({objeto => objeto.regar()})
 		})
 	}
 	method regar(){}
@@ -66,7 +65,7 @@ class Tomaco {
 	var property position
 	method image() = "tomaco.png"
 	method regar(){
-		if(not granja.parcelaOcupada(self.posicionSig())){
+		if(not granja.hayAlgo(self.posicionSig())){
 			position = self.posicionSig()
 		}	
 	}
@@ -127,15 +126,18 @@ class Mercado {
 	method vender(personaje){
 		const ganancias = personaje.valorDeLaMochila()
 		self.validarGanancias(ganancias)
-		if(not self.tieneDineroSuficiente(ganancias)){
-			self.error("el mercado no tiene dinero para pagar")
-		}
+		self.validarPago(ganancias)
 		personaje.entregarMercaderia(self)
 		personaje.recibirPago(ganancias)
 	}
 	method validarGanancias(ganancias){
 		if(ganancias==0){
 			self.error("No tenes cosecha para vender")
+		}
+	}
+	method validarPago(ganancias){
+		if(not self.tieneDineroSuficiente(ganancias)){
+			self.error("El mercado no tiene dinero suficiente")
 		}
 	}
 	method cosechar(personaje){}
