@@ -7,73 +7,72 @@ import granja.*
 describe "test de sembrado"{
     test "Hector siembra un maiz y aparece un maiz en etapa bebe"{
         personaje.position(game.at(1,1))
-        personaje.sembrar({new Maiz(position = personaje.position())})
-        const planta = granja.hayAlgo(game.at(1,1))
-        assert.notThat(planta==null)
+        personaje.sembrar(new Maiz(position = personaje.position()))
+        const planta = granja.obtenerEn(game.at(1,1))
         assert.equals("corn_baby.png", planta.image())
         assert.notThat(planta.esCosechable())
     }
     test "Hector no puede colocar un cultivo arriba de otro"{
         personaje.position(game.at(3,3))
-        personaje.sembrar({new Trigo(position = personaje.position())})
+        personaje.sembrar(new Trigo(position = personaje.position()))
         assert.throwsExceptionWithMessage("No puedo plantar aca", { personaje.sembrar({new Maiz(position = personaje.position())}) })
     }
 }
 describe "test de riego y crecimiento de plantas"{
     test "regar un maiz lo transforma y pasa a ser cosechable"{
         personaje.position(game.at(4, 4))
-        personaje.sembrar({ new Maiz(position = game.at(4, 4)) })
-        personaje.regar()
-        const maiz = granja.hayAlgo(game.at(4, 4))
+        personaje.sembrar( new Maiz(position = game.at(4, 4)) )
+        personaje.regarPlanta()
+        const maiz = granja.obtenerEn(game.at(4, 4))
         assert.equals("corn_adult.png", maiz.image())
         assert.that(maiz.esCosechable())
     }
     test "el trigo atraviesa todas sus etapas a medida que lo riegan"{
         personaje.position(game.at(4, 4))
-        personaje.sembrar({ new Trigo(position = game.at(4, 4)) })
-        const trigo = granja.hayAlgo(game.at(4,4))
+        personaje.sembrar( new Trigo(position = game.at(4, 4)) )
+        const trigo = granja.obtenerEn (game.at(4,4))
         assert.equals("wheat_0.png", trigo.image())
-        personaje.regar()
+        personaje.regarPlanta()
         assert.equals("wheat_1.png", trigo.image())
-        personaje.regar()
+        personaje.regarPlanta()
         assert.equals("wheat_2.png", trigo.image())
-        personaje.regar()
+        personaje.regarPlanta()
         assert.equals("wheat_3.png", trigo.image())
-        personaje.regar()
+        personaje.regarPlanta()
         assert.equals("wheat_0.png", trigo.image())
     }
     test"el tomaco crece una celda hacia arriba al regarse"{
         personaje.position(game.at(1, 1))
-        personaje.sembrar({ new Tomaco(position = game.at(1, 1)) })
-        const tomaco = granja.hayAlgo(game.at(1, 1))
-        personaje.regar() 
+        personaje.sembrar( new Tomaco(position = game.at(1, 1)) )
+        const tomaco = granja.obtenerEn(game.at(1, 1))
+        personaje.regarPlanta() 
         assert.equals(game.at(1, 2), tomaco.position()) 
     }
     test "el tomaco vuelve a la fila 0 si es regado en el borde superior"{
         game.height(10)
         personaje.position(game.at(1, 9))
-        personaje.sembrar({ new Tomaco(position = game.at(1, 9)) })
-        const tomaco = granja.hayAlgo(game.at(1, 9))
-        personaje.regar()
+        personaje.sembrar( new Tomaco(position = game.at(1, 9)) )
+        const tomaco = granja.obtenerEn (game.at(1, 9))
+        personaje.regarPlanta()
         assert.equals(game.at(1, 0), tomaco.position())
     }
     test "hector quizo regar donde no hay nada"{
         personaje.position(game.at(0, 0))
-        assert.throwsExceptionWithMessage("No hay ninguna planta aca para regar", {personaje.regar()})
+        assert.throwsExceptionWithMessage("no hay nada aca", {personaje.regarPlanta()})
     }
 }
 describe "test de cosecha e inventario"{
     test "Cosechar una planta lista, la saca del mapa y va al inventario de hector"{
         personaje.position(game.at(1, 1))
-        personaje.sembrar({ new Maiz(position = game.at(1, 1)) })
-        personaje.regar()
+        personaje.sembrar( new Maiz(position = game.at(1, 1)) )
+        personaje.regarPlanta()
         personaje.cosechar()
-        assert.equals(null, granja.hayAlgo(game.at(1, 1)))
+        assert.notThat(granja.hayAlgo(game.at(1, 1)))
         assert.equals(1, personaje.cantidadCosechada()) 
     }
     test "No se puede cosechar un trigo recien sembrado"{
         personaje.position(game.at(1,1))
-        personaje.sembrar({ new Trigo(position = game.at(1,1)) }) 
+        personaje.sembrar( new Trigo(position = game.at(1,1)) ) 
         assert.throwsExceptionWithMessage("Todavia no es cosechable", {personaje.cosechar()})
     }
 }
@@ -90,6 +89,6 @@ describe "test de mercados y ventas"{
     test "Falla la venta porque no estamos sobre un mercado"{
         personaje.cosecharPlanta(new Tomaco(position = game.at(0, 0)))
         personaje.position(game.at(8, 8)) 
-        assert.throwsExceptionWithMessage("no estas en un mercado", {personaje.venderCosecha()})
+        assert.throwsExceptionWithMessage("no hay nada aca", {personaje.venderCosecha()})
     }
 }

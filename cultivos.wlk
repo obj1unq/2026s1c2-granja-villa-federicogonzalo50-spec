@@ -30,10 +30,11 @@ class Trigo {
 	method precio() = etapa.precio()
 	method vender(personaje){}
 	method cosechar(personaje){
-		if(self.esCosechable()){
+		if(not self.esCosechable()){
+			self.error("Todavia no es cosechable")
+			}
 			personaje.cosecharPlanta(self)
         	granja.extraerCultivo(self)
-			}
 		}
 }
 object trigoRecienSembrado {
@@ -76,11 +77,12 @@ class Tomaco {
 	method precio() = 80
 	method vender(personaje){}
 	method cosechar(personaje){
-		if(self.esCosechable()){
+		if(not self.esCosechable()){
+			self.error("Todavia no es cosechable")
+			}
 			personaje.cosecharPlanta(self)
         	granja.extraerCultivo(self)
 		}
-	}
 }
 class Maiz {
 	var property position 
@@ -96,11 +98,12 @@ class Maiz {
 	method precio() = 150
 	method vender(personaje){}
 	method cosechar(personaje){
-		if(self.esCosechable()){
+		if(not self.esCosechable()){
+			self.error("Todavia no es cosechable")
+			}
 			personaje.cosecharPlanta(self)
         	granja.extraerCultivo(self)
 		}
-	}
 }
 object maizBebe {
 	method image() = "corn_baby.png"

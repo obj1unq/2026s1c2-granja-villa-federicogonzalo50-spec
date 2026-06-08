@@ -7,14 +7,18 @@ object granja {
     const property mercados =  []
     const property aspersores = []
 
-    method existencias() = cultivos + mercados + aspersores
+    method hayAlgo(posicion) {
+        return cultivos.any({c => c.position() == posicion}) or
+        mercados.any({m => m.position() == posicion}) or
+        aspersores.any({a => a.position() == posicion})
+    }
+    method obtenerEn(posicion){
+        const todos = cultivos + mercados + aspersores
+        return todos.find({obj => obj.position() == posicion})
+    }
 
-    method hayAlgo(posicion) = self.existencias().any({o => o.position()})
-
-
-    method sembrarEn(posicion, claseDelCultivo){
+    method sembrarEn(posicion, nuevoCultivo){
         self.validarSiembra(posicion)
-        const nuevoCultivo = claseDelCultivo.apply()
         self.registrarCultivo(nuevoCultivo)
         game.addVisual(nuevoCultivo)
     }

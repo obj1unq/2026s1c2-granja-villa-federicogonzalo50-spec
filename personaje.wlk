@@ -13,7 +13,7 @@ object personaje {
 	}
 	method regarPlanta(){
 		self.validarParcela()
-		granja.hayAlgo(self.position()).regar()
+		granja.obtenerEn(self.position()).regar()
 	}
 	method reportarEstado(){
 		const mensaje = "tengo " + oroTotal + " monedas, y " + self.cantidadCosechada() + " plantas por vender"
@@ -21,7 +21,7 @@ object personaje {
 	}
 	method venderCosecha() {
 		self.validarParcela()
-		granja.hayAlgo(self.position()).vender(self)
+		granja.obtenerEn(self.position()).vender(self)
 	}
 	method entregarMercaderia(mercado){
     mercado.acreditarCompra(cosechados, self.valorDeLaMochila())
@@ -32,7 +32,7 @@ object personaje {
 	}
 	method cosechar() {
 		self.validarParcela()
-		granja.hayAlgo(self.position()).cosechar(self)
+		granja.obtenerEn(self.position()).cosechar(self)
 	}
 	method cosecharPlanta(planta){
 		cosechados.add(planta)
